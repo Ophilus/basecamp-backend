@@ -1,26 +1,28 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const uri = require('./config/config');
 
 const PORT = process.env.PORT || 3000
-
 const app = express()
 
-async function start() {
-    try {
-        await mongoose.connect('mongodb+srv://admin:admin@cluster0-unrti.mongodb.net/test?retryWrites=true&w=majority', {
-            useNewUrlParser: true,
-            userFindAndModify: false
-        })
-        app.listen(PORT, () => {
-            console.log('Server has been started...')
-        })
-    } catch (e) {
-        console.log(e)
-    }
+let list;
+let servRun = false;
+
+app.use(express.json());
+if (!servRun) {
+    mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+    const connection = mongoose.connection;
+
+    app.listen(PORT, () => {
+        console.log(`Server has been started and running on port: ${PORT}`)
+        servRun = true;
+    })
+} else {
+    servRun = false;
 }
-
-
-
-
-
-start()
+const seriesRouter = require('./routes/series');
+const seasonsRouter = require('./routes/seasons');
+const episodesRouter = require('./routes/episodes');
+app.use('/series', seriesRouter);
+app.use('/seasons', seasonsRouter);
+app.use('/episodes', episodesRouter);

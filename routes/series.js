@@ -1,5 +1,5 @@
 const router = require('express').Router();
-let Series = require('../models/series.model');
+let Series = require('./models/series.model');
 
 router.route('/').get((req, res) => {
     Series.find()
@@ -7,8 +7,8 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/:id').get((req, res) => {
-    Series.findById(req.params.id)
+router.route('/:name').get((req, res) => {
+    Series.find({ 'relatedShow': req.params.name })
         .then(list_series => res.json(list_series))
         .catch(err => res.status(400).json('Error: ' + err));
 });
